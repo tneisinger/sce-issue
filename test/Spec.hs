@@ -16,6 +16,7 @@ import Servant.QuickCheck
     (<%>),
     Args (..),
   )
+import Servant.QuickCheck.Internal.HasGenRequest (HasGenRequest)
 
 main :: IO ()
 main = hspec spec
