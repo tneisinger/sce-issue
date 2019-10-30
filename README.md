@@ -1,7 +1,12 @@
-This repo demonstrates an issue in using the servant-quickcheck and
-servant-checked-exceptions libraries together.  To reproduce the issue, clone
-this repo and run `stack test`.
+This repo demonstrates how to use the servant-quickcheck and
+servant-checked-exceptions libraries together.  In order to use both libraries,
+an instance of `HasGenRequest (Throws err :> rest)` needs to be defined.  Here is
+simple way to define that instance:
 
-The issue seems to be that there is not a
-`Servant.QuickCheck.Internal.HasGenRequest.HasGenRequest` instance defined for
-the `Servant.Checked.Exceptions.Throws` type constructor.
+```
+instance (HasGenRequest rest) => HasGenRequest (Throws err :> rest) where
+  genRequest _ = genRequest (Proxy :: Proxy rest)
+```
+
+Check out [test/Spec.hs](test/Spec.hs) for more detail, or clone this repo and
+run `stack test` to verify that this works.
