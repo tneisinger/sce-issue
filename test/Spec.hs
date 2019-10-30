@@ -1,12 +1,18 @@
-{-# LANGUAGE DataKinds         #-}
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DataKinds           #-}
+{-# LANGUAGE FlexibleInstances   #-}
+{-# LANGUAGE OverloadedStrings   #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeOperators       #-}
 
 module Main (main) where
 
+import Data.Proxy (Proxy(..))
 import Lib (api, server)
 import Test.Hspec
 import Test.Hspec.Wai
 import Test.Hspec.Wai.JSON
+import Servant.Checked.Exceptions (Throws)
+import Servant ((:>))
 import Servant.Server (Context(..))
 import Servant.QuickCheck
   ( withServantServerAndContext,
@@ -16,7 +22,7 @@ import Servant.QuickCheck
     (<%>),
     Args (..),
   )
-import Servant.QuickCheck.Internal.HasGenRequest (HasGenRequest)
+import Servant.QuickCheck.Internal.HasGenRequest (HasGenRequest(..))
 
 main :: IO ()
 main = hspec spec
@@ -33,3 +39,6 @@ args = defaultArgs { maxSuccess = 500 }
 
 ctx :: Context '[]
 ctx = EmptyContext
+
+instance (HasGenRequest rest) => HasGenRequest (Throws err :> rest) where
+  genRequest _ = genRequest (Proxy :: Proxy rest)
